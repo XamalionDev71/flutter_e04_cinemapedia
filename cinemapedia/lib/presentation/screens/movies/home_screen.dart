@@ -31,67 +31,73 @@ class _HomeViewState extends ConsumerState<_HomeView> {
 
     ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
     ref.read(popularMoviesProvider.notifier).loadNextPage();
+    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
+    ref.read(upComingMoviesProvider.notifier).loadNextPage();
   }
 
   @override
   Widget build(BuildContext context) {
+    final initialLoading = ref.watch(initialLoadingProvider);
+
+    if (initialLoading) {
+      return FullScreenLoader();
+    }
+
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final popularMovies = ref.watch(popularMoviesProvider);
+    final topRatedMovies = ref.watch(topRatedMoviesProvider);
+    final upcomingMovies = ref.watch(upComingMoviesProvider);
     final slideshowMovies = ref.watch(movieSlideshowProvider);
 
     return CustomScrollView(
       slivers: [
         SliverAppBar(
           floating: true,
-          flexibleSpace: FlexibleSpaceBar(
-            title: CustomAppbar(),
-          ),
+          flexibleSpace: FlexibleSpaceBar(title: CustomAppbar()),
           expandedHeight: 130,
         ),
         SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index){
-              return Column(
-                children: [
-                  CustomAppbar(),
-                  MoviesSlideshow(movies: slideshowMovies),
-                  MovieHorizontalListview(
-                    movies: nowPlayingMovies,
-                    title: 'En cines',
-                    subTitle: 'Miércoles 5',
-                    loadNextPage: () {
-                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-                    },
-                  ),
-                  MovieHorizontalListview(
-                    movies: nowPlayingMovies,
-                    title: 'Próximamente',
-                    subTitle: 'Solo en cines',
-                    loadNextPage: () {
-                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-                    },
-                  ),
-                  MovieHorizontalListview(
-                    movies: popularMovies,
-                    title: 'Populares',
-                    loadNextPage: () {
-                      ref.read(popularMoviesProvider.notifier).loadNextPage();
-                    },
-                  ),
-                  MovieHorizontalListview(
-                    movies: nowPlayingMovies,
-                    title: 'Mejor calificadas',
-                    subTitle: 'Desde siempre',
-                    loadNextPage: () {
-                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-                    },
-                  ),
-                ],
-              );
-            }
-          ),
+          delegate: SliverChildBuilderDelegate((context, index) {
+            return Column(
+              children: [
+                //CustomAppbar(),
+                MoviesSlideshow(movies: slideshowMovies),
+                MovieHorizontalListview(
+                  movies: nowPlayingMovies,
+                  title: 'En cines',
+                  subTitle: 'Miércoles 5',
+                  loadNextPage: () {
+                    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MovieHorizontalListview(
+                  movies: upcomingMovies,
+                  title: 'Próximamente',
+                  subTitle: 'Solo en cines',
+                  loadNextPage: () {
+                    ref.read(upComingMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MovieHorizontalListview(
+                  movies: popularMovies,
+                  title: 'Populares',
+                  loadNextPage: () {
+                    ref.read(popularMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MovieHorizontalListview(
+                  movies: topRatedMovies,
+                  title: 'Mejor calificadas',
+                  subTitle: 'Desde siempre',
+                  loadNextPage: () {
+                    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+              ],
+            );
+          }, childCount: 1),
         ),
-      ] 
+      ],
     );
   }
 }
